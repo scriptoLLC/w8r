@@ -1,0 +1,33 @@
+{
+  "name": "w8r",
+  "version": "1.0.0",
+  "description": "w8r",
+  "main": "w8r.js",
+  "scripts": {
+    "test": "standard && tap w8r.spec.js",
+    "coverage": "standard && tap --cov --coverage-report lcov w8r.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scriptollc/w8r.git"
+  },
+  "keywords": [
+    "wait",
+    "pause",
+    "wait",
+    "for",
+    "server",
+    "docker",
+    "waiting"
+  ],
+  "author": "Todd Kennedy <todd@selfassembled.org>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/scriptollc/w8r/issues"
+  },
+  "homepage": "https://github.com/scriptollc/w8r#readme",
+  "devDependencies": {
+    "standard": "~7.1.2",
+    "tap": "~6.3.0"
+  }
+}

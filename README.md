@@ -1,4 +1,5 @@
 # w8r
+[![Build Status](https://travis-ci.org/scriptoLLC/w8r.svg?branch=master)](https://travis-ci.org/scriptoLLC/w8r)
 Poll to see if a service is running, and once it is, fork a new node process
 
 ## Huh?

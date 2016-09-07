@@ -18,23 +18,27 @@ on is available.
 
 ```
 const w8r = require('w8r')
-w8r(50, 'redis', 6379, 'populate-redis.js', (err, child) => {
-  // redis is running and your child process has been forked!
+const serverlist = [{host: 'redis', port: 6379}, '/var/run/mysql']
+w8r(50, serverlist, 'start-server.js', (err, child) => {
+  // both services are up and running!
+  // and child is your child process you started!
 })
 ```
 
 ## API
 
-* `w8r(checkInterval:number, host:string, port:number, procfile:string, procargs?:array(string), procopts?:object, cb:function)`
+* `w8r(checkInterval:number, serverList:array, procfile:string, procargs?:array(string), procopts?:object, cb:function)`
 Spawn a `net` client to check to see if the server at the provided host:port is
 available every `checkInterval` ms and then fork a new node process.
 
 * `checkInterval:number` - amount of delay, in ms, before trying again
-* `host:string` - the hostname where your server is
-* `port:number` - the port number
 * `profile:string` - the path to the entry point for the child process
 * `procargs:array(string)` (optional) - arguments to your command
 * `procopts:object` (optional) - options for the [`child_process.fork`](https://nodejs.org/api/child_process.html#child_process_child_process_fork_modulepath_args_options) command
+
+The `serverList` array can contain two separate object types:
+* paths to unix domain sockets (e.g.: `/var/run/mysql`)
+* objects containing a `port` and `host` key (e.g.: `{port: 6379, host: 'redis'}`)
 
 ## Licence
 Copyright © 2016 Scripto, LLC. Apache-2.0 Licensed.

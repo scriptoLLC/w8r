@@ -1,9 +1,9 @@
 const net = require('net')
 const fork = require('child_process').fork
+const ignore = ['ENOENT', 'ECONNREFUSED']
 
 module.exports = function (interval, servers, procfile, procargs, procopts, cb) {
-  const timers = {}
-  const status = {}
+  const timers = []
 
   if (typeof procopts === 'function') {
     cb = procopts
@@ -18,47 +18,45 @@ module.exports = function (interval, servers, procfile, procargs, procopts, cb) 
 
   if (!Array.isArray(servers)) {
     const [host, port] = servers.split(':')
-    if (!host || !port) {
-      return cb(new Error(`${servers} is not a valid [host]:[port] combination`))
+    if (!port) {
+      servers = [servers]
+    } else {
+      servers = [{host, port}]
     }
-    servers = [{host, port}]
   }
 
   const _total = servers.length
   let _done = 0
 
-  servers.forEach(s => check(interval, timers, s.host, s.port, procfile, procargs, procopts, done))
+  servers.forEach(s => check(interval, timers, s, procfile, procargs, procopts, done))
 
-  function done (err, key, child) {
+  function done (err) {
     ++_done
     if (err) {
-      Object.keys(status).forEach(tid => clearInterval(tid))
+      timers.forEach(tid => clearInterval(tid))
       _done = _total
       return cb(err)
     }
 
-    status[key] = child
-
     if (_done === _total) {
-      cb(null, status)
+      const child = fork(procfile, procargs, procopts)
+      cb(null, child)
     }
   }
 }
 
-function check (interval, timers, host, port, procfile, procargs, procopts, cb) {
-  const key = `${host}:${port}`
-  timers[key] = setInterval(checkServer, interval)
+function check (interval, timers, server, procfile, procargs, procopts, cb) {
+  timers.push(setInterval(checkServer, interval))
 
   function checkServer () {
     const client = net
-      .connect({port: port, host: host}, () => {
+      .connect(server, () => {
         client.end()
-        clearInterval(timers[key])
-        const child = fork(procfile, procargs, procopts)
-        cb(null, key, child)
+        clearInterval(timers.pop())
+        return cb()
       })
       .on('error', (err) => {
-        if (err.code !== 'ECONNREFUSED') {
+        if (!ignore.includes(err.code)) {
           client.end()
           return cb(err)
         }

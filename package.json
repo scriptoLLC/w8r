@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/scriptollc/w8r#readme",
   "devDependencies": {
-    "standard": "~7.1.2",
-    "tap": "~6.3.0"
+    "standard": "~10.0.2",
+    "tap": "~10.5.1"
   }
 }
